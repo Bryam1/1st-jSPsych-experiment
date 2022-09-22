@@ -10,6 +10,7 @@
         <link href="https://unpkg.com/jspsych@7.3.0/css/jspsych.css" 
         rel="stylesheet" type="text/css" />
         <script src="https://unpkg.com/@jspsych/plugin-image-keyboard-response@1.1.1"></script>
+        <script src = "stimuli.js"></script>
 
     </head>
 
@@ -18,8 +19,8 @@
     const jsPsych =  initJsPsych({
                     on_finish: function() {
                     jsPsych.data.displayData();
-}
-});
+                    }
+                    });
 
         var fixation1 = { 
             type: jsPsychHtmlKeyboardResponse, 
@@ -27,13 +28,13 @@
             choices: "NO_KEYS",
             trial_duration: 1000
 
-}
+            }
 
         var sentence = { 
             type: jsPsychHtmlKeyboardResponse, 
-            stimulus: 'You dropped a balloon on a vase', 
+            stimulus: jsPsych.timelineVariable('sentence'), 
             choices: " "
-}
+            }
 
         var fixation2 = { 
             type: jsPsychHtmlKeyboardResponse, 
@@ -41,48 +42,28 @@
             choices: "NO_KEYS",
             trial_duration: 500
 
-}
+            }
 
         var picture = {
             type: jsPsychImageKeyboardResponse,
-            stimulus: "/Users/bbarbech/1st-jSPsych-experiment/dog.jpeg",
+            stimulus: jsPsych.timelineVariable('pic'),
             choices: ['S', 'N', 's', 'n']
-}
+            }
 
-var fixation3 = { 
-            type: jsPsychHtmlKeyboardResponse, 
-            stimulus: '<p style="font-size: 48px;">+</p>',
-            choices: "NO_KEYS",
-            trial_duration: 1000
 
-}
-
-        var sentence2 = { 
-            type: jsPsychHtmlKeyboardResponse, 
-            stimulus: 'You dropped a bowlingball on a pear', 
-            choices: " "
-}
-
-        var fixation4 = { 
-            type: jsPsychHtmlKeyboardResponse, 
-            stimulus: '<p style="font-size: 48px;">+</p>', 
-            choices: "NO_KEYS",
-            trial_duration: 500
-
-}
-
-        var picture2 = {
-            type: jsPsychImageKeyboardResponse,
-            stimulus: "/Users/bbarbech/1st-jSPsych-experiment/cat.jpeg",
-            choices: ['S', 'N', 's', 'n']
-}
 
         var end_experiment = {
             type: jsPsychHtmlKeyboardResponse,
             stimulus: 'Thank you for participating! Click any key to end the experiment.'
-};
+            };
 
-jsPsych.run([fixation1, sentence, fixation2, picture, fixation3, sentence2, fixation4, picture2, end_experiment]);
+        var experiment_procedure = {
+            timeline: [fixation1, sentence, fixation2, picture],
+            timeline_variables: myitems,
+            randomize_order: true
+            };
+
+jsPsych.run([experiment_procedure, end_experiment]);
 
 </script>
 </body>
