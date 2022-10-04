@@ -167,4 +167,4 @@ var list1 = [
       "condition": "Light_Normal",
       "List": 1
     }
-  ]
+  ] 
