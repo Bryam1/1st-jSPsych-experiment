@@ -31,8 +31,11 @@ exp1 %>% select(subject, rt, typeoftrial, trialcondition, correct) %>%
 filter(typeoftrial == "picture" &
 trialcondition %in% 
 c("Heavy_Normal", "Light_Smashed", "Heavy_Smashed", "Light_Normal"))
-3 %in% c(1,2,3)
-3 %in% c(1,2,3) | 3>5
+
+condition_data = condition_data%>%
+separate(trialcondition, into = c("weight", "shape"), sep= "_")
+##3 %in% c(1,2,3)
+##3 %in% c(1,2,3) | 3>5
 ```
 ```{r}
 exp1 %>% select(dataset, correct, typeoftrial) %>%
@@ -40,12 +43,18 @@ exp1 %>% select(dataset, correct, typeoftrial) %>%
 ```
 
 ```{r}
-mean = 
-condition_data %>%
-  group_by(trialcondition) %>%
+mean = condition_data %>%
+  group_by(weight, shape) %>%
   summarize(mean_rt = mean(rt),
             sd_rt = sd(rt),
             mean_acc = mean(correct))
+
+mean%>%
+  ggplot(aes(x=shape,y=mean_rt,fill=weight)) +
+  theme_few()+
+  geom_col(position="dodge") +
+  labs(x="shape",y="weight",title="title")
+  
 ```
 
 ```{r}
@@ -64,15 +73,73 @@ ggtitle("Histogram of RT")
 ```
 
 ```{r}
-library(ggplot2)
-library(ggthemes) 
-condition_data %>%
-means %>% 
+mean%>% 
 ggplot(aes(x = trialcondition, y = mean_rt)) +
-geom_bar(stat = "identity")+
+geom_col()+
 theme_fivethirtyeight()+
 xlab("RT (in milliseconds)") + 
-ylab ("Count")+
+ylab("Count")+
 ggtitle("Barplot of RT")
+```
+
+```{r}
+df = read_csv("relatedness_exp.csv")
+
+ 
+part_df= df %>% select(ID, Type, pathlength, RT) %>%
+  filter(Type == "Related" & pathlength %in% c(1,2))
+
+mean_all = df %>%
+  summarize(mean_rt = mean(RT))
+
+mean_part = part_df %>%
+  summarize(mean_rt = mean(RT))
+
+mean_ID = df %>%
+  group_by(ID)%>%
+  summarize(mean_rt =mean(RT))
+
+df %>% count()
+nrow(df)
+df %>%
+  group_by(ID)%>%
+  count()
+
+df%>%
+  group_by(ID, pathlength)%>%
+  count()
+```
+```{r}
+condition_data%>%
+  group_by(trialcondition, subject)%>%
+  count()
+```
+```{r}
+mean_condition = df%>%
+  group_by(Type, pathlength)%>%
+  summarize(mean_rt = mean(RT))
+
+mean_condition%>%
+  ggplot(aes(x=pathlength, y=mean_rt, fill= Type)) +
+  geom_col(position = "dodge") +
+  theme_few() +
+  labs(x="Pathlength", y="Reaction Time", title= "Reaction Time Barplot") 
+```
+```{r}
+df = df%>%  mutate(RT_seconds = RT/1000,
+accuracy = ifelse(pathlength == 1 & Type == "Related", 1, 0))
+
+df = df%>%
+  mutate(pathlength=as.factor(pathlength),
+         Type=as.factor(Type))
+df%>% pull(Type)
+df%>% pull(RT)
+levels(df%>%pull(pathlength))
+
+df %>% pull (ID) %>% unique()
+
+df %>% pull (response) %>% unique()
+
+unique(c(1,3,3,4,5,5,1,2))
 ```
 
